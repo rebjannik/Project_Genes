@@ -1,8 +1,7 @@
 package Default;
 
 public class Project {
-	public void tes() {
-		int i=2;
-		i++;
+	public int tes() {
+		return 2;
 	}
 }
