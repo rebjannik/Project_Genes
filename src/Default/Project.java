@@ -1,11 +1,20 @@
 package Default;
 
+
+
 public class Project {
-	public int tes() {
-		return 2;
+ //To do:
+	/*Should create a graph class involving of nodes,
+	 * Reading files
+	 * Putting out the numbers required
+	 * */
+	public static void main(String[] args) {
+		Graph<DNANode> g = new Graph<DNANode>();
+		
+		g.readAndCreate();
 	}
 	
-	public int trying2() {
-		return 666;
-	}
+
+
 }
+
