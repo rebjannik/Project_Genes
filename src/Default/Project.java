@@ -13,7 +13,7 @@ public class Project {
 	 * Reading files
 	 * Putting out the numbers required
 	 * */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		Graph<DNANode> g = new Graph<DNANode>();
 		
 		
@@ -33,7 +33,19 @@ public class Project {
 		DecodeArray array = table.createArray();
 		
 		//Create the graph with the nodes with the modified file.
+		Scanner sc = new Scanner(new File(modified));
 		
+		while(sc.hasNext()) {
+			String[] pairs = sc.next().split(",");
+			DNANode node1= new DNANode(pairs[0]);
+			DNANode node2 = new DNANode(pairs[1]);
+			
+			g.CreateEdge(node1, node2);
+		}
+		
+		sc.close();
+		
+		g.printEdges();
 	}
 	
 	private static CodeTable createFiles(String fname){
@@ -41,11 +53,11 @@ public class Project {
 		try {
 			Scanner sc = new Scanner(new File(fname));
 			BufferedWriter forMap = new BufferedWriter(new FileWriter(fname+".map"));
-			BufferedWriter forModified = new BufferedWriter(new FileWriter(fname+".modified"));
+			BufferedWriter forModified = new BufferedWriter(new FileWriter(fname+".processed"));
 			
 			while(sc.hasNext()) {
-				String[] values = sc.nextLine().split("	");
-				if(values.length==12) {
+				String[] values = sc.nextLine().split("\t");
+				if(values.length>10) {
 					int FirstOverlap = Integer.parseInt(values[6])-Integer.parseInt(values[5]);
 					int SecondOverlap= Integer.parseInt(values[10])-Integer.parseInt(values[9]);
 					
@@ -106,4 +118,3 @@ public class Project {
 		
 	}
 }
-
