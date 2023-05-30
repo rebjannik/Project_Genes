@@ -5,7 +5,7 @@ public class DecodeArray {
 	String[] configs;
 	
 	public DecodeArray(int size){
-		this.configs = new String[size];
+		this.configs = new String[size+1];
 	}
 	
 	public void add(String str) {
