@@ -11,6 +11,14 @@ public class Graph<T> {
 	private double numberOfNodes=0;
 	private double numberOfEdges=0;
 	
+	public List<T> getNodes(){
+		return listOfNodes;
+	}
+	
+	public List<T> getNeighbours(T node){
+		return listOfEdges.get(node);
+	}
+	
     public Graph() {
         listOfEdges = new HashMap<>();
         listOfNodes = new ArrayList<>();
