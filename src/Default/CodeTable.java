@@ -29,9 +29,15 @@ public class CodeTable {
 		return intToCode.containsValue(s);
 	}
 	
-	public void add(String s) {
+	/**
+	    Add a new value to the table, returning the new index.
+	**/
+	public int add(String s) {
 		intToCode.put(current, s);
+		codeToInt.put(s, current);
 		current++;
+		
+		return current-1;
 	}
 	
 	public DecodeArray createArray() {
