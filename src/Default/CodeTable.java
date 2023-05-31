@@ -5,23 +5,23 @@ import java.util.Map.Entry;
 
 public class CodeTable {
 	HashMap<Integer, String> intToCode = new HashMap<Integer, String>();
+	HashMap<String, Integer> codeToInt = new HashMap<String, Integer>();
+		
 	int current= 1;
 	
 	public String getCurrent() {
 		return Integer.toString(current);
 	}
 	
-	public String getKey(String s) {
-		for(Entry<Integer, String> entry : intToCode.entrySet()) {
-			if (entry.getValue().equals(s)) {
-				return Integer.toString(entry.getKey());
-			}
-		}
-		return s;
+	public Integer getKey(String s) {
+		
+		return codeToInt.get(s);		
 	}
 	
 	public void addWithKey(String s, int i) {
 		intToCode.put(i, s);
+		codeToInt.put(s, i);
+		
 		current++;
 	}
 	
