@@ -87,14 +87,12 @@ public class Project {
 	            boolean foundKey2 = table.find(values[1]);
 
 	            if (!foundKey1) {
-	            	table.add(values[0]);
-	                forMap.write(values[0] + "," + table.getKey(values[0]));
+	                forMap.write(values[0] + "," + table.add(values[0]));
 	                forMap.newLine();
 	            }
 
 	            if (!foundKey2) {
-	        	table.add(values[1]);
-	                forMap.write(values[1] + "," + table.getKey(values[1]));
+	                forMap.write(values[1] + "," + table.add(values[1]));
 	                forMap.newLine();
 	            }
 
