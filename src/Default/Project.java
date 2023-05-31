@@ -70,36 +70,41 @@ public class Project {
 	         BufferedWriter forModified = new BufferedWriter(new FileWriter(fname + ".processed"))) {
 
 	        while (sc.hasNextLine()) {
+			
 	            String[] values = sc.nextLine().split("\t");
-	            if (values.length > 10) {
-	                int firstOverlap = Integer.parseInt(values[6]) - Integer.parseInt(values[5]);
-	                int secondOverlap = Integer.parseInt(values[10]) - Integer.parseInt(values[9]);
+	            if (values.length <= 10) {
+			continue;
+		    }
+		 
+		    int firstOverlap = Integer.parseInt(values[6]) - Integer.parseInt(values[5]);
+	            int secondOverlap = Integer.parseInt(values[10]) - Integer.parseInt(values[9]);
  
-	                if (firstOverlap >= 1000 && secondOverlap >= 1000) {
-	                    boolean foundKey1 = table.find(values[0]);
-	                    boolean foundKey2 = table.find(values[1]);
+	            if (firstOverlap < 1000 || secondOverlap < 1000) {
+			continue;
+		    }
+	            
+		    boolean foundKey1 = table.find(values[0]);
+	            boolean foundKey2 = table.find(values[1]);
 
-	                    if (!foundKey1) {
-	                        table.add(values[0]);
-	                        forMap.write(values[0] + "," + table.getKey(values[0]));
-	                        forMap.newLine();
-	                    }
-
-	                    if (!foundKey2) {
-	                        table.add(values[1]);
-	                        forMap.write(values[1] + "," + table.getKey(values[1]));
-	                        forMap.newLine();
-	                    }
-
-	                    String key1 = table.getKey(values[0]);
-	                    String key2 = table.getKey(values[1]);
-
-	                    forModified.write(key1);
-	                    forModified.write(",");
-	                    forModified.write(key2);
-	                    forModified.newLine();
-	                }
+	            if (!foundKey1) {
+	            	table.add(values[0]);
+	                forMap.write(values[0] + "," + table.getKey(values[0]));
+	                forMap.newLine();
 	            }
+
+	            if (!foundKey2) {
+	        	table.add(values[1]);
+	                forMap.write(values[1] + "," + table.getKey(values[1]));
+	                forMap.newLine();
+	            }
+
+	            String key1 = table.getKey(values[0]);
+	            String key2 = table.getKey(values[1]);
+
+	            forModified.write(key1);
+	            forModified.write(",");
+	            forModified.write(key2);
+	            forModified.newLine();
 	        }
 	    } catch (IOException e) {
 	        e.printStackTrace();
