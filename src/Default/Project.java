@@ -6,34 +6,46 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
 import java.io.BufferedWriter;
+import java.time.LocalDateTime;
 
 public class Project {
- //To do:
+	//Constants to make testing and debugging easier
+	private static String fileName = "extraLines.txt";
+ 	private static boolean ignoreExistingMappingFiles = false;
+	
+ 	//To do:
 	/*Should create a graph class involving of nodes,
 	 * Reading files
 	 * Putting out the numbers required
 	 * */
 	public static void main(String[] args) throws FileNotFoundException {
+		
+		//System.out.println(LocalDateTime.now()+ " Starting progress");
 		Graph<DNANode> g = new Graph<DNANode>();
 		
-		
-		String map = "xaa.txt"+".map";
-		String modified = "xaa.txt"+".processed";
+		//The modified file names
+		String map = fileName+".map";
+		String modified = fileName+".processed";
 		
 		File mapFile = new File(map);
 		File modifiedFile = new File(modified);
 		
+		//The hashmaps that are created one from name to int, the other from int to name.
 		CodeTable table = new CodeTable();
-		if (!mapFile.exists()&&!modifiedFile.exists()) {
-			table = createFiles("xaa.txt");
-		}else {
-			table = readFiles("xaa.txt");
+		
+		//First condition is if we want to test the 
+		if (ignoreExistingMappingFiles || (!mapFile.exists() && !modifiedFile.exists())) {
+			//System.out.println(LocalDateTime.now()+" creating mapping files");
+			table = createFiles(fileName);
+		}
+		else {
+			//System.out.println(LocalDateTime.now()+" reading mapping files");
+			table = readFiles(fileName);
 		}
 		
-		DecodeArray array = table.createArray();
+		//System.out.println(LocalDateTime.now()+" creating Graph");
 		
 		//Create the graph with the nodes with the modified file.
 		Scanner sc = new Scanner(new File(modified));
@@ -42,68 +54,84 @@ public class Project {
 			String[] pairs = sc.next().split(",");
 			
 			if(pairs.length==2) {
-
+				//As we have already sorted out the irrelevant pairs we can easily just create the edges 
 				DNANode node1= new DNANode(pairs[0]);
 				DNANode node2 = new DNANode(pairs[1]);
+				
 				g.CreateEdge(node1, node2);
 			}
 		}
 		
+		g.printEdges();
 		sc.close();
+		//System.out.println(LocalDateTime.now()+" calculating graph node distribution");
+		
+		//Class that handles the entire calculations
 		GraphCalculator<DNANode> calc = new GraphCalculator<DNANode>(g);
 		
-		Map<Integer, Integer> degreeDistr = calc.DegreeDistribution();
+		//Our degreeDistribution hashmap that is going to become a histogram
+		Map<Integer, Integer> degreeDistribution = calc.degreeDistribution();
 		
-		for (Entry<Integer, Integer> entry : degreeDistr.entrySet()) {
-            int vertex = entry.getKey();
-            int neighbors = entry.getValue();
-
-            System.out.print(vertex + " : ");
-            System.out.println(neighbors);
-		}
+		
+		//System.out.println(LocalDateTime.now()+" done");
 	}
 	
+	/*
+	 * Input: A string with the filename.
+	 * Side effects: creates two files with the name fname.processed and fname.map.
+	 * Output: a CodeTable with the relevant pairs.
+	 */
 	private static CodeTable createFiles(String fname) {
-	    CodeTable table = new CodeTable();
+	    
+		CodeTable table = new CodeTable();
+	    
 	    try (Scanner sc = new Scanner(new File(fname));
-	         BufferedWriter forMap = new BufferedWriter(new FileWriter(fname + ".map"));
-	         BufferedWriter forModified = new BufferedWriter(new FileWriter(fname + ".processed"))) {
-
+	    	
+	    	//Starting the file writing process
+	        BufferedWriter forMap = new BufferedWriter(new FileWriter(fname + ".map"));
+	        BufferedWriter forModified = new BufferedWriter(new FileWriter(fname + ".processed"))) {
+	    	
+	    	
 	        while (sc.hasNextLine()) {
-			
+	        	
 	            String[] values = sc.nextLine().split("\t");
-	            if (values.length <= 10) {
-			continue;
-		    }
-		 
-		    int firstOverlap = Integer.parseInt(values[6]) - Integer.parseInt(values[5]);
+	            
+	            //Is the line correct? 
+	            if (values.length <= 11) {
+	            	continue;
+	            }
+	            
+	            //Overlap lenghts that have to be 1000 or larger
+	            int firstOverlap = Integer.parseInt(values[6]) - Integer.parseInt(values[5]);
 	            int secondOverlap = Integer.parseInt(values[10]) - Integer.parseInt(values[9]);
  
 	            if (firstOverlap < 1000 || secondOverlap < 1000) {
-			continue;
-		    }
+	            	continue;
+	            }
 	            
-		    boolean foundKey1 = table.find(values[0]);
-	            boolean foundKey2 = table.find(values[1]);
+	            //Getting keys and adding keys with correct mapping onto them
+	            Integer key1 = table.getKey(values[0]);
+	            Integer key2 = table.getKey(values[1]);
 
-	            if (!foundKey1) {
-	                forMap.write(values[0] + "," + table.add(values[0]));
+	            if (key1==null) {
+	            	key1=table.add(values[0]);
+	                forMap.write(values[0] + "," + key1);
 	                forMap.newLine();
 	            }
 
-	            if (!foundKey2) {
-	                forMap.write(values[1] + "," + table.add(values[1]));
+	            if (key2==null) {
+	            	key2=table.add(values[1]);
+	                forMap.write(values[1] + "," + key2);
 	                forMap.newLine();
 	            }
-
-	            String key1 = table.getKey(values[0]);
-	            String key2 = table.getKey(values[1]);
-
-	            forModified.write(key1);
+	            
+	            //Writing to the .processed file
+	            forModified.write(key1.toString());
 	            forModified.write(",");
-	            forModified.write(key2);
+	            forModified.write(key2.toString());
 	            forModified.newLine();
-	        }
+	        	}
+	    
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    } catch (ArrayIndexOutOfBoundsException e1) {
@@ -112,9 +140,15 @@ public class Project {
 	    return table;
 	}
 	
-
+	
+	/*
+	 * Input: A string filename
+	 * Side effects: none
+	 * Output: A correct CodeTable that has details over which int goes with which contig and vice versa
+	 */
 	private static CodeTable readFiles(String fname) {
 		CodeTable table = new CodeTable();
+		
 		try {
 			Scanner map = new Scanner(new File(fname +".map"));
 			
