@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-//import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.io.BufferedWriter;
@@ -68,7 +67,7 @@ public class Project {
 		
 		calc.createFrequencyFile(degreeDistribution);
 
-		ProcessBuilder processBuilder = new ProcessBuilder("python", "createHistogram.py");
+		ProcessBuilder processBuilder = new ProcessBuilder("python", "createHistogramGraphDegree.py");
 
             // Start the process
             Process process = processBuilder.start();
@@ -77,12 +76,31 @@ public class Project {
             int exitCode = process.waitFor();
             
             if (exitCode == 0) {
-                System.out.println("Python script executed successfully.");
+                System.out.println("Python script 1 executed successfully.");
             } else {
-                System.out.println("Python script execution failed.");
+                System.out.println("Python script 1 execution failed.");
             }
-		System.out.println("Histogram created under file name 'degreeDistribution.pdf'");
+		System.out.println("Histogram created under file name 'degreeDistribution.png'");
 		
+		int componentsSize = calc.getNumberOfComponentsLargerThan(3);
+		System.out.println("There are " + componentsSize +" graph components larger than or equal to 3.");
+		
+		calc.WriteDensityFile();
+
+		ProcessBuilder processBuilder2 = new ProcessBuilder("python", "createHistogramDensityDistribution.py");
+
+		// Start the process
+		Process process2 = processBuilder2.start();
+
+		// Wait for the process to complete
+		int exitCode2 = process2.waitFor();
+		
+		if (exitCode2 == 0) {
+			System.out.println("Python script 2 executed successfully.");
+		} else {
+			System.out.println("Python script 2 execution failed.");
+		}
+
 		System.out.println(LocalDateTime.now()+" done");
 	}
 	

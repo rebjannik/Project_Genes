@@ -23,6 +23,5 @@ plt.ylim(0, max(frequency)+1)
 plt.xlabel("Degree")
 plt.ylabel("Frequency")
 
-# Show the histogram
-plt.show()
+# Saves the histogram
 plt.savefig("degreeDistribution.png")
