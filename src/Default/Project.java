@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+//import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.io.BufferedWriter;
@@ -12,17 +12,12 @@ import java.time.LocalDateTime;
 
 public class Project {
 	//Constants to make testing and debugging easier
-	private static String fileName = "extraLines.txt";
+	private static String fileName = "xaa.txt";
  	private static boolean ignoreExistingMappingFiles = false;
 	
- 	//To do:
-	/*Should create a graph class involving of nodes,
-	 * Reading files
-	 * Putting out the numbers required
-	 * */
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		
-		//System.out.println(LocalDateTime.now()+ " Starting progress");
+		System.out.println(LocalDateTime.now()+ " Starting progress");
 		Graph<DNANode> g = new Graph<DNANode>();
 		
 		//The modified file names
@@ -37,15 +32,15 @@ public class Project {
 		
 		//First condition is if we want to test the 
 		if (ignoreExistingMappingFiles || (!mapFile.exists() && !modifiedFile.exists())) {
-			//System.out.println(LocalDateTime.now()+" creating mapping files");
+			System.out.println(LocalDateTime.now()+" creating mapping files");
 			table = createFiles(fileName);
 		}
 		else {
-			//System.out.println(LocalDateTime.now()+" reading mapping files");
+			System.out.println(LocalDateTime.now()+" reading mapping files");
 			table = readFiles(fileName);
 		}
 		
-		//System.out.println(LocalDateTime.now()+" creating Graph");
+		System.out.println(LocalDateTime.now()+" creating Graph");
 		
 		//Create the graph with the nodes with the modified file.
 		Scanner sc = new Scanner(new File(modified));
@@ -62,9 +57,8 @@ public class Project {
 			}
 		}
 		
-		g.printEdges();
 		sc.close();
-		//System.out.println(LocalDateTime.now()+" calculating graph node distribution");
+		System.out.println(LocalDateTime.now()+" calculating graph node distribution");
 		
 		//Class that handles the entire calculations
 		GraphCalculator<DNANode> calc = new GraphCalculator<DNANode>(g);
@@ -72,8 +66,24 @@ public class Project {
 		//Our degreeDistribution hashmap that is going to become a histogram
 		Map<Integer, Integer> degreeDistribution = calc.degreeDistribution();
 		
+		calc.createFrequencyFile(degreeDistribution);
+
+		ProcessBuilder processBuilder = new ProcessBuilder("python", "createHistogram.py");
+
+            // Start the process
+            Process process = processBuilder.start();
+
+            // Wait for the process to complete
+            int exitCode = process.waitFor();
+            
+            if (exitCode == 0) {
+                System.out.println("Python script executed successfully.");
+            } else {
+                System.out.println("Python script execution failed.");
+            }
+		System.out.println("Histogram created under file name 'degreeDistribution.pdf'");
 		
-		//System.out.println(LocalDateTime.now()+" done");
+		System.out.println(LocalDateTime.now()+" done");
 	}
 	
 	/*
@@ -163,7 +173,6 @@ public class Project {
 			map.close();
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return table;

@@ -2,6 +2,8 @@ package Default;
 
 import java.util.List;
 import java.util.Map;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 
 public class GraphCalculator<T> {
@@ -44,4 +46,17 @@ public class GraphCalculator<T> {
 
         return distribution;
     }
+
+	public void createFrequencyFile(Map<Integer,Integer> map) {
+		try(FileWriter writer = new FileWriter("DegreeFrequency.txt")){
+			for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                writer.append(entry.getKey().toString());
+                writer.append(",");
+                writer.append(entry.getValue().toString());
+                writer.append("\n");
+			}
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
 }
