@@ -13,7 +13,7 @@ with open("DegreeFrequency.txt", "r") as file:
 plt.figure(figsize=(10,10))
 
 # Create a histogram with origin at (0, 0)
-plt.bar(degree, frequency, width=1, align='edge', edgecolor='black')
+plt.hist(degree, frequency, width=1, align='edge', edgecolor='black')
 
 # Set the origin at (0, 0)
 plt.xlim(0, max(degree)+1)
