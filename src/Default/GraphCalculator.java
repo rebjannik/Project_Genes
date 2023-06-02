@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class GraphCalculator<T> {
-	private Graph<T> graph; 
+	private Graph graph; 
 	
 	/*
 	 * Constructor that uses an already built graph!
 	 */
-	public GraphCalculator(Graph<T> g) {
+	public GraphCalculator(Graph g) {
 		this.graph = g;
 	}
 
@@ -24,12 +24,12 @@ public class GraphCalculator<T> {
 	 * Output: Hashmap with the degree as key and frequency as the value 
 	 */
 	private Map<Integer, Integer> degreeDistribution(){
-		Map<T, Integer>degreeDistribution = new HashMap<>();
+		Map<Integer, Integer>degreeDistribution = new HashMap<>();
 		
-		for(T node : graph.getNodes()) {
-			List<T> neighbours = graph.getNeighbours(node);
+		for(int i = 1; i< graph.getNumberOfNodes(); i++) {
+			List<Integer> neighbours = graph.getNeighbours(i);
 			int degree = neighbours.size();
-			degreeDistribution.put(node, degree);
+			degreeDistribution.put(i, degree);
 		}
 		
 		return getNodeDegreeDistribution(degreeDistribution);
@@ -40,7 +40,7 @@ public class GraphCalculator<T> {
 	/*
 	 * Private helper function for DegreeDistribution
 	 */
-	private Map<Integer, Integer> getNodeDegreeDistribution(Map<T, Integer> degreeDistribution) {
+	private Map<Integer, Integer> getNodeDegreeDistribution(Map<Integer, Integer> degreeDistribution) {
         Map<Integer, Integer> distribution = new HashMap<>();
 
         for (int degree : degreeDistribution.values()) {
@@ -76,7 +76,7 @@ public class GraphCalculator<T> {
 	 * Output: an Integer with how many smaller continuous graphs are in the large graph
 	 */
 	public int getNumberOfComponentsLargerThan(int n){
-		List<List<T>> components = findComponents(n);
+		List<List<Integer>> components = findComponents(n);
 		return components.size();
 	}
 
@@ -84,15 +84,15 @@ public class GraphCalculator<T> {
 	 * Input: an Integer size of n
 	 * Output: a list with smaller list ocntianing continuous graphs.
 	 */
-	private List<List<T>> findComponents(int n){
-		List<List<T>> components = new ArrayList<>();
-		Set<T> visited = new HashSet<>();
+	private List<List<Integer>> findComponents(int n){
+		List<List<Integer>> components = new ArrayList<>();
+		Set<Integer> visited = new HashSet<>();
 
-		for (T node : graph.getNodes()){
-			if(!visited.contains(node)){
-				List<T> component = new ArrayList<>();
+		for (int i = 1; i<graph.getNumberOfNodes(); i++){
+			if(!visited.contains(i)){
+				List<Integer> component = new ArrayList<>();
 				
-				dfs(node, visited, component);
+				dfs(i, visited, component);
 				
 				if(component.size()>= n){
 					components.add(component);
@@ -109,11 +109,11 @@ public class GraphCalculator<T> {
 	 * Output: Nothing
 	 * The code that executes the whole  
 	 */
-	private void dfs(T node, Set<T> visited, List<T> component){
+	private void dfs(int node, Set<Integer> visited, List<Integer> component){
 		visited.add(node);
 		component.add(node);
 
-		for (T neighbor : graph.getNeighbours(node)){
+		for (Integer neighbor : graph.getNeighbours(node)){
 			if(!visited.contains(neighbor)){
 				dfs(neighbor, visited, component);
 			}
@@ -126,10 +126,10 @@ public class GraphCalculator<T> {
 	 * Used for the histogram creation
 	 */
 	private HashMap<Float,Integer> graphDensity(){
-		List<List<T>> components = findComponents(1);
+		List<List<Integer>> components = findComponents(1);
 		HashMap<Float,Integer> densityMap = new HashMap<Float, Integer>();
 		
-		for(List<T> comp : components){
+		for(List<Integer> comp : components){
 			Float density = calculateDensity(comp);
 			densityMap.put(density, densityMap.getOrDefault(density, 0) +1);
 		}
@@ -141,7 +141,7 @@ public class GraphCalculator<T> {
 	 * Input: A list of a component of the big graph
 	 * Output: The calculated density of this specified component
 	 */
-	private Float calculateDensity(List<T> subGraph){
+	private Float calculateDensity(List<Integer> subGraph){
 		Float n = (float) subGraph.size();
 		Float edges = countEdges(subGraph);
 
@@ -152,10 +152,10 @@ public class GraphCalculator<T> {
 		
 	}
 
-	private Float countEdges(List<T> subGraph){
+	private Float countEdges(List<Integer> subGraph){
 		Float edges =0f;
-		for(T node : subGraph){
-			List<T> neighbours = graph.getNeighbours(node);
+		for(Integer node : subGraph){
+			List<Integer> neighbours = graph.getNeighbours(node);
 			edges += neighbours.size();
 		}
 

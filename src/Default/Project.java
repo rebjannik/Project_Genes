@@ -14,10 +14,10 @@ public class Project {
  	private static boolean ignoreExistingMappingFiles = false;
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		String fileName = args[0];
+		String fileName = "overlaps.m4";
 			
 		System.out.println(LocalDateTime.now()+ " Starting progress");
-		Graph<DNANode> g = new Graph<DNANode>();
+		Graph g = new Graph();
 		
 		//The modified file names
 		String map = fileName+".map";
@@ -54,11 +54,9 @@ public class Project {
 			}	
 			
 			if(pairs.length==2) {
-				//As we have already sorted out the irrelevant pairs we can easily just create the edges 
-				DNANode node1= new DNANode(pairs[0]);
-				DNANode node2 = new DNANode(pairs[1]);
+				//As we have already sorted out the irrelevant pairs we can easily just create the edges
 				
-				g.CreateEdge(node1, node2);
+				g.CreateEdge(Integer.parseInt(pairs[0]), Integer.parseInt(pairs[1]));
 			}
 		}
 		
@@ -66,7 +64,7 @@ public class Project {
 		System.out.println(LocalDateTime.now()+" calculating graph node distribution");
 		
 		//Class that handles the entire calculations
-		GraphCalculator<DNANode> calc = new GraphCalculator<DNANode>(g);
+		GraphCalculator<Integer> calc = new GraphCalculator<Integer>(g);
 		
 		//Our degreeDistribution hashmap that is going to become a histogram
 		calc.createFrequencyFile();
