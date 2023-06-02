@@ -11,6 +11,7 @@ import java.util.HashSet;
 
 public class GraphCalculator<T> {
 	private Graph<T> graph; 
+	
 	/*
 	 * Constructor that uses an already built graph!
 	 */
@@ -22,7 +23,7 @@ public class GraphCalculator<T> {
 	 * Input: Nothing
 	 * Output: Hashmap with the degree as key and frequency as the value 
 	 */
-	public Map<Integer, Integer> degreeDistribution(){
+	private Map<Integer, Integer> degreeDistribution(){
 		Map<T, Integer>degreeDistribution = new HashMap<>();
 		
 		for(T node : graph.getNodes()) {
@@ -49,7 +50,14 @@ public class GraphCalculator<T> {
         return distribution;
     }
 
-	public void createFrequencyFile(Map<Integer,Integer> map) {
+	/*
+	 * Input: Nothing
+	 * Output: Nothing
+	 * Side effect: Creates a file with the degree frequency of the graph given.
+	 */
+	public void createFrequencyFile() {
+		Map<Integer,Integer> map = degreeDistribution();
+
 		try(FileWriter writer = new FileWriter("DegreeFrequency.txt")){
 			for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
                 writer.append(entry.getKey().toString());
@@ -57,16 +65,25 @@ public class GraphCalculator<T> {
                 writer.append(entry.getValue().toString());
                 writer.append("\n");
 			}
+
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 
+	/*
+	 * Input: an integer of smallest continous graph allowed
+	 * Output: an Integer with how many smaller continuous graphs are in the large graph
+	 */
 	public int getNumberOfComponentsLargerThan(int n){
 		List<List<T>> components = findComponents(n);
 		return components.size();
 	}
 
+	/*
+	 * Input: an Integer size of n
+	 * Output: a list with smaller list ocntianing continuous graphs.
+	 */
 	private List<List<T>> findComponents(int n){
 		List<List<T>> components = new ArrayList<>();
 		Set<T> visited = new HashSet<>();
@@ -75,7 +92,7 @@ public class GraphCalculator<T> {
 			if(!visited.contains(node)){
 				List<T> component = new ArrayList<>();
 				
-				dfs(node, visited, component, n);
+				dfs(node, visited, component);
 				
 				if(component.size()>= n){
 					components.add(component);
@@ -87,60 +104,79 @@ public class GraphCalculator<T> {
 		return components;
 	}
 
-private void dfs(T node, Set<T> visited, List<T> component, int n){
-	visited.add(node);
-	component.add(node);
+	/*
+	 * Input: A node, a set of visited, and a list nodes in the component
+	 * Output: Nothing
+	 * The code that executes the whole  
+	 */
+	private void dfs(T node, Set<T> visited, List<T> component){
+		visited.add(node);
+		component.add(node);
 
-	for (T neighbor : graph.getNeighbours(node)){
-		if(!visited.contains(neighbor)){
-			dfs(neighbor, visited, component, n);
+		for (T neighbor : graph.getNeighbours(node)){
+			if(!visited.contains(neighbor)){
+				dfs(neighbor, visited, component);
+			}
 		}
 	}
-}
 
-private List<Float> graphDensity(){
-	List<List<T>> components = findComponents(1);
-	List<Float> densityList = new ArrayList<Float>();
-	
-	for(List<T> comp : components){
-		Float density = calculateDensity(comp);
-		densityList.add(density);
-	}
-
-	return densityList;
-}
-
-private Float calculateDensity(List<T> subGraph){
-	Float n = (float) subGraph.size();
-	Float edges = countEdges(subGraph);
-
-	Float density = edges/(n*n-n);
-
-	return density;
-	
-	
-}
-
-private Float countEdges(List<T> subGraph){
-	Float edges =0f;
-	for(T node : subGraph){
-		List<T> neighbours = graph.getNeighbours(node);
-		edges += neighbours.size();
-	}
-
-	return edges/2;
-}
-
-public void WriteDensityFile(){
-	List<Float> densityList=graphDensity();
-
-	try(FileWriter writer = new FileWriter("DensityDistribution.txt")){
-		for (Float entry : densityList) {
-			writer.append(entry.toString());
-			writer.append(",");
+	/*
+	 * Input: Nothing
+	 * Output: a HashMap with the key for density with frequency
+	 * Used for the histogram creation
+	 */
+	private HashMap<Float,Integer> graphDensity(){
+		List<List<T>> components = findComponents(1);
+		HashMap<Float,Integer> densityMap = new HashMap<Float, Integer>();
+		
+		for(List<T> comp : components){
+			Float density = calculateDensity(comp);
+			densityMap.put(density, densityMap.getOrDefault(density, 0) +1);
 		}
-	}catch(IOException e){
-		e.printStackTrace();
+
+		return densityMap;
 	}
-}
+
+	/*
+	 * Input: A list of a component of the big graph
+	 * Output: The calculated density of this specified component
+	 */
+	private Float calculateDensity(List<T> subGraph){
+		Float n = (float) subGraph.size();
+		Float edges = countEdges(subGraph);
+
+		Float density = edges/(n*n-n);
+
+		return density;
+		
+		
+	}
+
+	private Float countEdges(List<T> subGraph){
+		Float edges =0f;
+		for(T node : subGraph){
+			List<T> neighbours = graph.getNeighbours(node);
+			edges += neighbours.size();
+		}
+
+		return edges/2;
+	}
+
+	public void WriteDensityFile(){
+		HashMap<Float,Integer> densityMap = graphDensity();
+
+		try(FileWriter writer = new FileWriter("DensityDistribution.txt")){
+			
+			for (Map.Entry<Float, Integer> entry : densityMap.entrySet()) {
+				
+				writer.append(entry.getKey().toString());
+				writer.append(",");
+				writer.append(entry.getValue().toString());
+				writer.append("\n");
+			
+			}
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+	}
 }

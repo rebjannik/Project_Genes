@@ -3,10 +3,15 @@ package Default;
 import java.util.HashMap;
 
 public class CodeTable {
-	HashMap<Integer, String> intToCode = new HashMap<Integer, String>();
-	HashMap<String, Integer> codeToInt = new HashMap<String, Integer>();
+	HashMap<Integer, String> intToCode;
+	HashMap<String, Integer> codeToInt;
 		
 	int current= 1;
+	
+	public CodeTable(){
+		intToCode = new HashMap<Integer,String>();
+		codeToInt = new HashMap<String, Integer>();
+	}
 	
 	/*
 	 * Input: Nothing
@@ -50,5 +55,11 @@ public class CodeTable {
 		return current-1;
 	}
 	
-	
+	/*
+	 * Deletes the codeToInt hasmap that was only used to get a key
+	 * Used for memory saving
+	 */
+	public void doneAdding(){
+		codeToInt = new HashMap<>();
+	}
 }

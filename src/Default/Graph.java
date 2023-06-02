@@ -8,10 +8,8 @@ import java.util.Map;
 public class Graph<T> {
 	private Map<T, List<T>> listOfEdges;
 	private List<T> listOfNodes;
-	private double numberOfNodes=0;
-	private double numberOfEdges=0;
 	
-	/*
+    /*
 	 * Get the list of all the nodes
 	 */
 	public List<T> getNodes(){
@@ -39,7 +37,6 @@ public class Graph<T> {
      * Creates an edge between the two nodes in the nodes list. Also ensures that the lists gets updated.
      */
     public void CreateEdge(T node1, T node2) {
-        numberOfEdges++;
         
     	if (!listOfEdges.containsKey(node1)) {
             addVertex(node1);
@@ -67,8 +64,7 @@ public class Graph<T> {
      * Output: nothing
      */
     private void addVertex(T node) {
-    	numberOfNodes++;
-    	
+
     	listOfNodes.add(node);
         listOfEdges.put(node, new ArrayList<>());
     }

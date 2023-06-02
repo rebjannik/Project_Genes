@@ -4,18 +4,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Scanner;
 import java.io.BufferedWriter;
 import java.time.LocalDateTime;
 
 public class Project {
 	//Constants to make testing and debugging easier
-	private static String fileName = "xaa.txt";
+	//private static String fileName = "xaa.txt";
  	private static boolean ignoreExistingMappingFiles = false;
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		
+		String fileName = args[0];
+			
 		System.out.println(LocalDateTime.now()+ " Starting progress");
 		Graph<DNANode> g = new Graph<DNANode>();
 		
@@ -43,9 +43,15 @@ public class Project {
 		
 		//Create the graph with the nodes with the modified file.
 		Scanner sc = new Scanner(new File(modified));
-		
+		int pairCounter = 0;
+
 		while(sc.hasNext()) {
 			String[] pairs = sc.next().split(",");
+			pairCounter++;
+
+			if(pairCounter%1000000==0){
+				System.out.println(LocalDateTime.now() + "processing pair " + pairCounter/1000000 + " million");
+			}	
 			
 			if(pairs.length==2) {
 				//As we have already sorted out the irrelevant pairs we can easily just create the edges 
@@ -63,11 +69,9 @@ public class Project {
 		GraphCalculator<DNANode> calc = new GraphCalculator<DNANode>(g);
 		
 		//Our degreeDistribution hashmap that is going to become a histogram
-		Map<Integer, Integer> degreeDistribution = calc.degreeDistribution();
-		
-		calc.createFrequencyFile(degreeDistribution);
+		calc.createFrequencyFile();
 
-		ProcessBuilder processBuilder = new ProcessBuilder("python", "createHistogramGraphDegree.py");
+		ProcessBuilder processBuilder = new ProcessBuilder("python3", "createHistogramGraphDegree.py");
 
             // Start the process
             Process process = processBuilder.start();
@@ -87,7 +91,7 @@ public class Project {
 		
 		calc.WriteDensityFile();
 
-		ProcessBuilder processBuilder2 = new ProcessBuilder("python", "createHistogramDensityDistribution.py");
+		ProcessBuilder processBuilder2 = new ProcessBuilder("python3", "createHistogramDensityDistribution.py");
 
 		// Start the process
 		Process process2 = processBuilder2.start();
@@ -112,7 +116,7 @@ public class Project {
 	private static CodeTable createFiles(String fname) {
 	    
 		CodeTable table = new CodeTable();
-	    
+	    int lineCounter = 0;
 	    try (Scanner sc = new Scanner(new File(fname));
 	    	
 	    	//Starting the file writing process
@@ -121,7 +125,11 @@ public class Project {
 	    	
 	    	
 	        while (sc.hasNextLine()) {
-	        	
+	        	lineCounter++;
+
+				if(lineCounter%1000000==0){
+					System.out.println(LocalDateTime.now() + "processing line " + lineCounter/1000000 + " million");
+				}
 	            String[] values = sc.nextLine().split("\t");
 	            
 	            //Is the line correct? 
