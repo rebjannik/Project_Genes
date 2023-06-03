@@ -27,7 +27,7 @@ public class Graph{
 	 * Constructor
 	 */
     public Graph() {
-        System.out.println(LocalDateTime.now() + " Initializing list");
+        Debug.Log("Initializaing list.");
 
         listOfEdges = new ArrayList[11380820+1];
 
@@ -35,7 +35,7 @@ public class Graph{
             listOfEdges[i] = new ArrayList<Integer>();
         }
 
-        System.out.println(LocalDateTime.now() + " Done initializing list");
+        Debug.Log("Done initializing list.");
     }
     
     /*

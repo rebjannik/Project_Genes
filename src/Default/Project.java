@@ -16,7 +16,7 @@ public class Project {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		String fileName = "overlaps.m4";
 			
-		System.out.println(LocalDateTime.now()+ " Starting progress");
+		Debug.Log("Starting program.");
 		Graph g = new Graph();
 		
 		//The modified file names
@@ -31,15 +31,15 @@ public class Project {
 		
 		//First condition is if we want to test the 
 		if (ignoreExistingMappingFiles || (!mapFile.exists() && !modifiedFile.exists())) {
-			System.out.println(LocalDateTime.now()+" creating mapping files");
+			Debug.Log("Creating mapping files.");
 			table = createFiles(fileName);
 		}
 		else {
-			System.out.println(LocalDateTime.now()+" reading mapping files");
+			Debug.Log("Reading mapping files.");
 			table = readFiles(fileName);
 		}
 		
-		System.out.println(LocalDateTime.now()+" creating Graph");
+		Debug.Log("*** Creating graph. ***");
 		
 		//Create the graph with the nodes with the modified file.
 		Scanner sc = new Scanner(new File(modified));
@@ -50,7 +50,7 @@ public class Project {
 			pairCounter++;
 
 			if(pairCounter%1000000==0){
-				System.out.println(LocalDateTime.now() + "processing pair " + pairCounter/1000000 + " million");
+				Debug.Log("Processing pair " + pairCounter / 1000000 + " million.");
 			}	
 			
 			if(pairs.length==2) {
@@ -61,7 +61,7 @@ public class Project {
 		}
 		
 		sc.close();
-		System.out.println(LocalDateTime.now()+" calculating graph node distribution");
+		Debug.Log("*** Calculating graph node distribution. ***");
 		
 		//Class that handles the entire calculations
 		GraphCalculator<Integer> calc = new GraphCalculator<Integer>(g);
@@ -126,7 +126,7 @@ public class Project {
 	        	lineCounter++;
 
 				if(lineCounter%1000000==0){
-					System.out.println(LocalDateTime.now() + "processing line " + lineCounter/1000000 + " million");
+					Debug.Log("Processing line " + lineCounter/1000000 + " million");
 				}
 	            String[] values = sc.nextLine().split("\t");
 	            
@@ -169,7 +169,7 @@ public class Project {
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    } catch (ArrayIndexOutOfBoundsException e1) {
-	        System.out.println("Something went wrong when writing or reading");
+			Debug.Log("Something went wrong writing or reading: " + e1.getMessage());
 	    }
 	    return table;
 	}
