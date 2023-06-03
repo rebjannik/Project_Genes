@@ -1,28 +1,43 @@
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import colors
 
-data = []
+degree = []
 frequency = []
 
+print("reading lines")
 with open("DensityDistribution.txt", "r") as file:
     for line in file:
         values = line.strip().split(",")
+
         if len(values) == 2:
-            data.append(float(values[0]))
-            frequency.append(float(values[1]))
+            degree.append(float(values[0]))
+            frequency.append(int(values[1]))
 
-#Size of the figure
-plt.figure(figsize=(10,10))
+# Create an array with repeated values based on the frequency
+print("getting bins")
+degree_repeated = np.repeat(degree, frequency)
+bin_width = 0.001  # Specify the desired bin width for whole numbers
+bins = np.arange(0, max(degree) + bin_width, bin_width)
 
-# Create a histogram with origin at (0, 0)
-plt.hist(data, frequency, width=1, align='edge', edgecolor='black')
 
-# Set the origin at (0, 0)
-plt.xlim(0, max(data)+0.1)
-plt.ylim(0, max(frequency)+1)
+print("making the graph")
+counts, _, patches = plt.hist(degree_repeated, bins=bins, alpha=1, edgecolor="black")
 
-#adds labels
+print("labels")
 plt.xlabel("Density")
 plt.ylabel("Frequency")
+plt.title("Density Distribution")
 
+print("scales")
+plt.yscale('log')
+plt.xscale('linear')
+
+print("width")
+# Adjust the width of each bar to make them thinner
+for patch in patches:
+    patch.set_width(bin_width)
+
+print("saving")
 # Saves the histogram
-plt.savefig("densityDistribution.png")
+plt.savefig("DensityDistribution.png", dpi=600)

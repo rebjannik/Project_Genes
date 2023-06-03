@@ -1,5 +1,6 @@
 package Default;
 
+import java.util.List;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -78,10 +79,12 @@ public class Project {
             }
 		System.out.println("Histogram created under file name 'degreeDistribution.png'");
 		
-		int componentsSize = calc.getNumberOfComponentsLargerThan(3);
-		System.out.println("There are " + componentsSize +" graph components larger than or equal to 3.");
+		List<List<Integer>> components = calc.findComponents();
+		int number = calc.countComponentsSize(3, components);
+
+		System.out.println("There are " + number  +" graph components larger than or equal to 3.");
 		
-		calc.WriteDensityFile();
+		calc.WriteDensityFile(components);
 
 		ProcessBuilder processBuilder2 = new ProcessBuilder("python3", "createHistogramDensityDistribution.py");
 

@@ -50,7 +50,7 @@ public class GraphCalculator<T> {
 
         for (int i=0; i< degreeDistribution.length; i++) {
 
-			distribution[degreeDistribution[i]] = distribution[degreeDistribution[i]]++;
+			distribution[degreeDistribution[i]]++;
         }
 
 		Debug.Log("Starting nodeDegreeDistribution. DONE");
@@ -69,11 +69,12 @@ public class GraphCalculator<T> {
 
 		try(FileWriter writer = new FileWriter("DegreeFrequency.txt")){
 			for (int i = 0; i < map.length; i++) {
-
-				writer.append(Integer.toString(i));
-                writer.append(",");
-                writer.append(Integer.toString(map[i]));
-                writer.append("\n");
+				if(map[i]!=0){
+					writer.append(Integer.toString(i));
+                	writer.append(",");
+                	writer.append(Integer.toString(map[i]));
+                	writer.append("\n");
+				}
 			}
 
 		}catch(IOException e){
@@ -81,20 +82,12 @@ public class GraphCalculator<T> {
 		}
 	}
 
-	/*
-	 * Input: an integer of smallest continous graph allowed
-	 * Output: an Integer with how many smaller continuous graphs are in the large graph
-	 */
-	public int getNumberOfComponentsLargerThan(int n){
-		List<List<Integer>> components = findComponents(n);
-		return components.size();
-	}
-
+	
 	/*
 	 * Input: an Integer size of n
 	 * Output: a list with smaller list ocntianing continuous graphs.
 	 */
-	private List<List<Integer>> findComponents(int n){
+	public List<List<Integer>> findComponents(){
 		List<List<Integer>> components = new ArrayList<>();
 		Set<Integer> visited = new HashSet<>();
 
@@ -103,12 +96,10 @@ public class GraphCalculator<T> {
 				List<Integer> component = new ArrayList<>();
 				
 				dfs(i, visited, component);
-				
-				if(component.size()>= n){
-					components.add(component);
-				}
 
+				components.add(component);
 			}
+			
 		}
 
 		return components;
@@ -135,8 +126,7 @@ public class GraphCalculator<T> {
 	 * Output: a HashMap with the key for density with frequency
 	 * Used for the histogram creation
 	 */
-	private HashMap<Float,Integer> graphDensity(){
-		List<List<Integer>> components = findComponents(1);
+	private HashMap<Float,Integer> graphDensity(List<List<Integer>> components){ ;
 		HashMap<Float,Integer> densityMap = new HashMap<Float, Integer>();
 		
 		for(List<Integer> comp : components){
@@ -172,8 +162,8 @@ public class GraphCalculator<T> {
 		return edges/2;
 	}
 
-	public void WriteDensityFile(){
-		HashMap<Float,Integer> densityMap = graphDensity();
+	public void WriteDensityFile(List<List<Integer>> components){
+		HashMap<Float,Integer> densityMap = graphDensity(components);
 
 		try(FileWriter writer = new FileWriter("DensityDistribution.txt")){
 			
@@ -188,5 +178,17 @@ public class GraphCalculator<T> {
 		}catch(IOException e){
 			e.printStackTrace();
 		}
+	}
+
+	public int countComponentsSize(int n, List<List<Integer>> components){
+		int sum = 0;
+
+		for(List<Integer> comp : components){
+			if(comp.size()>=n){
+				sum++;
+			}
+		}
+
+		return sum;
 	}
 }
