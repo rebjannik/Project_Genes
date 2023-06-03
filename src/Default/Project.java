@@ -160,7 +160,9 @@ public class Project {
 	            forModified.write(key2.toString());
 	            forModified.newLine();
 	        }
-	    
+			
+		table = null;
+		
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    } catch (ArrayIndexOutOfBoundsException e1) {

@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 degree = []
 frequency = []
+
 with open("DegreeFrequency.txt", "r") as file:
     for line in file:
         values = line.strip().split(",")
@@ -9,19 +11,19 @@ with open("DegreeFrequency.txt", "r") as file:
             degree.append(float(values[0]))
             frequency.append(float(values[1]))
 
-#Size of the figure
-plt.figure(figsize=(10,10))
+# Determine the number of bins based on the range of degree values
+bins = np.arange=(0,1.1, 0.08)
+counts, bins, pathces = plt.hist(degree, bins, aplha=1)
 
-# Create a histogram with origin at (0, 0)
-plt.hist(degree, frequency, width=1, align='edge', edgecolor='black')
+plt.xticks(np.arange(0,1.1,0.1))
+plt.yscale('log')
 
-# Set the origin at (0, 0)
-plt.xlim(0, max(degree)+1)
-plt.ylim(0, max(frequency)+1)
-
-#adds labels
+# Size of the figure
 plt.xlabel("Degree")
 plt.ylabel("Frequency")
+plt.title("Degree Distribution")
 
 # Saves the histogram
-plt.savefig("degreeDistribution.png")
+plt.savefig("degreeDistribution.png", dpi=600)
+
+
