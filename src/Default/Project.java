@@ -113,9 +113,10 @@ public class Project {
 	    int lineCounter = 0;
 	    try (Scanner sc = new Scanner(new File(fname));
 	    	
-	    	//Starting the file writing process
-	        BufferedWriter forMap = new BufferedWriter(new FileWriter(fname + ".map"));
-	        BufferedWriter forModified = new BufferedWriter(new FileWriter(fname + ".processed"))) {
+	    	// Starting the file writing process
+			// Using .tmp files to avoid processing inclompleted files later.  
+	        BufferedWriter forMap = new BufferedWriter(new FileWriter(fname + ".map.tmp"));
+	        BufferedWriter forModified = new BufferedWriter(new FileWriter(fname + ".processed.tmp"))) {
 	    	
 	    	
 	        while (sc.hasNextLine()) {
@@ -167,35 +168,27 @@ public class Project {
 	    } catch (ArrayIndexOutOfBoundsException e1) {
 			Debug.Log("Something went wrong writing or reading: " + e1.getMessage());
 	    }
+		   
+		File oldfile =new File(fname + ".map.tmp");
+        File newfile =new File(fname + ".map");
+
+		if(oldfile.renameTo(newfile)){
+			Debug.Log(fname + ".map.tmp renamed to " + fname + ".map");
+        }else{
+			Debug.Log(fname + ".map.tmp could not be renamed.");
+			System.exit(1);
+        }
+
+		oldfile =new File(fname + ".processed.tmp");
+    	newfile =new File(fname + ".processed");
+
+		if(oldfile.renameTo(newfile)){
+			Debug.Log(fname + ".processed.tmp renamed to " + fname + ".processed");
+        }else{
+			Debug.Log(fname + ".processed.tmp could not be renamed.");
+			System.exit(1);
+        }
+		
 	    return table;
-	}
-	
-	
-	/*
-	 * Input: A string filename
-	 * Side effects: none
-	 * Output: A correct CodeTable that has details over which int goes with which contig and vice versa
-	 */
-	private static CodeTable readFiles(String fname) {
-		CodeTable table = new CodeTable();
-		
-		try {
-			Scanner map = new Scanner(new File(fname +".map"));
-			
-			while(map.hasNext()) {
-				String[] values = map.nextLine().split(",");
-				
-				if(values.length==2) {
-					table.addWithKey(values[0], Integer.parseInt(values[1]));
-				}
-			}
-			
-			map.close();
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return table;
-		
 	}
 }
