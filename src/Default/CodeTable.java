@@ -3,23 +3,15 @@ package Default;
 import java.util.HashMap;
 
 public class CodeTable {
+
 	HashMap<Integer, String> intToCode;
 	HashMap<String, Integer> codeToInt;
-		
-	int current= 1;
+	
+	int current= 0;
 	
 	public CodeTable(){
-		intToCode = new HashMap<Integer,String>();
-		codeToInt = new HashMap<String, Integer>();
-	}
-	
-	/*
-	 * Input: Nothing
-	 * Output: A string with the number of elements + 1
-	 * Or in other words, the number which the next input is going to go to.
-	 */
-	public String getCurrent() {
-		return Integer.toString(current);
+		intToCode = new HashMap<Integer,String>(Const.getMaxCodetableSize());
+		codeToInt = new HashMap<String, Integer>(Const.getMaxCodetableSize());
 	}
 	
 	/*
@@ -38,28 +30,23 @@ public class CodeTable {
 	 * Side Effects: Adds a new value (the string) with the key of the int given
 	 */
 	public void addWithKey(String s, int i) {
+
+		current++;
+		
 		intToCode.put(i, s);
 		codeToInt.put(s, i);
 		
-		current++;
 	}
 	
 	/*
 	* Add a new value to the table, returning the new index.
 	*/
 	public int add(String s) {
+		current++;
+
 		intToCode.put(current, s);
 		codeToInt.put(s, current);
-		current++;
 		
-		return current-1;
-	}
-	
-	/*
-	 * Deletes the codeToInt hasmap that was only used to get a key
-	 * Used for memory saving
-	 */
-	public void doneAdding(){
-		codeToInt = new HashMap<>();
+		return current;
 	}
 }

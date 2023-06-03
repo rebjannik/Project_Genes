@@ -1,7 +1,6 @@
 package Default;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -9,14 +8,11 @@ import java.io.BufferedWriter;
 import java.time.LocalDateTime;
 
 public class Project {
-	//Constants to make testing and debugging easier
-	//private static String fileName = "xaa.txt";
- 	private static boolean ignoreExistingMappingFiles = false;
-	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		String fileName = "overlaps.m4";
+		
+		String fileName = Const.INPUT_DATA_FNAME;
 			
-		System.out.println(LocalDateTime.now()+ " Starting progress");
+		Debug.Log("Starting program.");
 		Graph g = new Graph();
 		
 		//The modified file names
@@ -26,20 +22,16 @@ public class Project {
 		File mapFile = new File(map);
 		File modifiedFile = new File(modified);
 		
-		//The hashmaps that are created one from name to int, the other from int to name.
-		CodeTable table = new CodeTable();
-		
 		//First condition is if we want to test the 
-		if (ignoreExistingMappingFiles || (!mapFile.exists() && !modifiedFile.exists())) {
-			System.out.println(LocalDateTime.now()+" creating mapping files");
-			table = createFiles(fileName);
+		if (Const.IGNORE_EXISTING_MAPPING_FILES || (!mapFile.exists() && !modifiedFile.exists())) {
+			Debug.Log("Creating mapping files.");
+			createFiles(fileName);
 		}
 		else {
-			System.out.println(LocalDateTime.now()+" reading mapping files");
-			table = readFiles(fileName);
+			Debug.Log("Mapping files exist. Skip creating them.");
 		}
 		
-		System.out.println(LocalDateTime.now()+" creating Graph");
+		Debug.Log("*** Creating graph. ***");
 		
 		//Create the graph with the nodes with the modified file.
 		Scanner sc = new Scanner(new File(modified));
@@ -50,7 +42,7 @@ public class Project {
 			pairCounter++;
 
 			if(pairCounter%1000000==0){
-				System.out.println(LocalDateTime.now() + "processing pair " + pairCounter/1000000 + " million");
+				Debug.Log("Processing pair " + pairCounter / 1000000 + " million.");
 			}	
 			
 			if(pairs.length==2) {
@@ -61,13 +53,15 @@ public class Project {
 		}
 		
 		sc.close();
-		System.out.println(LocalDateTime.now()+" calculating graph node distribution");
+		Debug.Log("*** Calculating graph node distribution. ***");
 		
 		//Class that handles the entire calculations
 		GraphCalculator<Integer> calc = new GraphCalculator<Integer>(g);
 		
 		//Our degreeDistribution hashmap that is going to become a histogram
 		calc.createFrequencyFile();
+
+		Debug.Log("*** Calculating graph node distribution. *** DONE");
 
 		ProcessBuilder processBuilder = new ProcessBuilder("python3", "createHistogramGraphDegree.py");
 
@@ -117,16 +111,17 @@ public class Project {
 	    int lineCounter = 0;
 	    try (Scanner sc = new Scanner(new File(fname));
 	    	
-	    	//Starting the file writing process
-	        BufferedWriter forMap = new BufferedWriter(new FileWriter(fname + ".map"));
-	        BufferedWriter forModified = new BufferedWriter(new FileWriter(fname + ".processed"))) {
+	    	// Starting the file writing process
+			// Using .tmp files to avoid processing inclompleted files later.  
+	        BufferedWriter forMap = new BufferedWriter(new FileWriter(fname + ".map.tmp"));
+	        BufferedWriter forModified = new BufferedWriter(new FileWriter(fname + ".processed.tmp"))) {
 	    	
 	    	
 	        while (sc.hasNextLine()) {
 	        	lineCounter++;
 
 				if(lineCounter%1000000==0){
-					System.out.println(LocalDateTime.now() + "processing line " + lineCounter/1000000 + " million");
+					Debug.Log("Processing line " + lineCounter/1000000 + " million");
 				}
 	            String[] values = sc.nextLine().split("\t");
 	            
@@ -164,42 +159,34 @@ public class Project {
 	            forModified.write(",");
 	            forModified.write(key2.toString());
 	            forModified.newLine();
-	        	}
+	        }
 	    
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    } catch (ArrayIndexOutOfBoundsException e1) {
-	        System.out.println("Something went wrong when writing or reading");
+			Debug.Log("Something went wrong writing or reading: " + e1.getMessage());
 	    }
+		   
+		File oldfile =new File(fname + ".map.tmp");
+        File newfile =new File(fname + ".map");
+
+		if(oldfile.renameTo(newfile)){
+			Debug.Log(fname + ".map.tmp renamed to " + fname + ".map");
+        }else{
+			Debug.Log(fname + ".map.tmp could not be renamed.");
+			System.exit(1);
+        }
+
+		oldfile =new File(fname + ".processed.tmp");
+    	newfile =new File(fname + ".processed");
+
+		if(oldfile.renameTo(newfile)){
+			Debug.Log(fname + ".processed.tmp renamed to " + fname + ".processed");
+        }else{
+			Debug.Log(fname + ".processed.tmp could not be renamed.");
+			System.exit(1);
+        }
+		
 	    return table;
-	}
-	
-	
-	/*
-	 * Input: A string filename
-	 * Side effects: none
-	 * Output: A correct CodeTable that has details over which int goes with which contig and vice versa
-	 */
-	private static CodeTable readFiles(String fname) {
-		CodeTable table = new CodeTable();
-		
-		try {
-			Scanner map = new Scanner(new File(fname +".map"));
-			
-			while(map.hasNext()) {
-				String[] values = map.nextLine().split(",");
-				
-				if(values.length==2) {
-					table.addWithKey(values[0], Integer.parseInt(values[1]));
-				}
-			}
-			
-			map.close();
-			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		return table;
-		
 	}
 }
