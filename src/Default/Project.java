@@ -26,17 +26,13 @@ public class Project {
 		File mapFile = new File(map);
 		File modifiedFile = new File(modified);
 		
-		//The hashmaps that are created one from name to int, the other from int to name.
-		CodeTable table = new CodeTable();
-		
 		//First condition is if we want to test the 
 		if (ignoreExistingMappingFiles || (!mapFile.exists() && !modifiedFile.exists())) {
 			Debug.Log("Creating mapping files.");
-			table = createFiles(fileName);
+			createFiles(fileName);
 		}
 		else {
-			Debug.Log("Reading mapping files.");
-			table = readFiles(fileName);
+			Debug.Log("Mapping files exist. Skip creating them.");
 		}
 		
 		Debug.Log("*** Creating graph. ***");
