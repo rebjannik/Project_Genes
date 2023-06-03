@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class Project {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
-		String fileName = Const.INPUT_DATA_FNAME;
+		String fileName = args[0];
 			
 		Debug.Log("Starting program.");
 		Graph g = new Graph();
