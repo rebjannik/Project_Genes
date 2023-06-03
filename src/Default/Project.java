@@ -8,12 +8,9 @@ import java.io.BufferedWriter;
 import java.time.LocalDateTime;
 
 public class Project {
-	//Constants to make testing and debugging easier
-	//private static String fileName = "xaa.txt";
- 	private static boolean ignoreExistingMappingFiles = false;
-	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		String fileName = "overlaps.m4";
+		
+		String fileName = Const.INPUT_DATA_FNAME;
 			
 		Debug.Log("Starting program.");
 		Graph g = new Graph();
@@ -26,7 +23,7 @@ public class Project {
 		File modifiedFile = new File(modified);
 		
 		//First condition is if we want to test the 
-		if (ignoreExistingMappingFiles || (!mapFile.exists() && !modifiedFile.exists())) {
+		if (Const.IGNORE_EXISTING_MAPPING_FILES || (!mapFile.exists() && !modifiedFile.exists())) {
 			Debug.Log("Creating mapping files.");
 			createFiles(fileName);
 		}
@@ -63,6 +60,8 @@ public class Project {
 		
 		//Our degreeDistribution hashmap that is going to become a histogram
 		calc.createFrequencyFile();
+
+		Debug.Log("*** Calculating graph node distribution. *** DONE");
 
 		ProcessBuilder processBuilder = new ProcessBuilder("python3", "createHistogramGraphDegree.py");
 
@@ -160,7 +159,7 @@ public class Project {
 	            forModified.write(",");
 	            forModified.write(key2.toString());
 	            forModified.newLine();
-	        	}
+	        }
 	    
 	    } catch (IOException e) {
 	        e.printStackTrace();

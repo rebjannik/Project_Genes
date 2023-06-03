@@ -23,29 +23,37 @@ public class GraphCalculator<T> {
 	 * Input: Nothing
 	 * Output: Hashmap with the degree as key and frequency as the value 
 	 */
-	private Map<Integer, Integer> degreeDistribution(){
-		Map<Integer, Integer>degreeDistribution = new HashMap<>();
+	private int[] degreeDistribution(){
 		
-		for(int i = 1; i< graph.getNumberOfNodes(); i++) {
-			List<Integer> neighbours = graph.getNeighbours(i);
-			int degree = neighbours.size();
-			degreeDistribution.put(i, degree);
+		int[] degreeDistribution = new int[graph.getNumberOfNodes()];
+		
+		Debug.Log("Starting degreeDistribution.");
+
+		for(int i = 0; i< graph.getNumberOfNodes(); i++) {
+
+			degreeDistribution[i] = graph.getNeighbours(i+1).size();
 		}
 		
-		return getNodeDegreeDistribution(degreeDistribution);
-		
-		
+		Debug.Log("Starting degreeDistribution. DONE");
+
+		return getNodeDegreeDistribution(degreeDistribution);		
 	}
 	
 	/*
 	 * Private helper function for DegreeDistribution
 	 */
-	private Map<Integer, Integer> getNodeDegreeDistribution(Map<Integer, Integer> degreeDistribution) {
-        Map<Integer, Integer> distribution = new HashMap<>();
+	private int[] getNodeDegreeDistribution(int[] degreeDistribution) {
 
-        for (int degree : degreeDistribution.values()) {
-            distribution.put(degree, distribution.getOrDefault(degree, 0) + 1);
+        int[] distribution = new int[degreeDistribution.length];
+
+		Debug.Log("Starting nodeDegreeDistribution.");
+
+        for (int i=0; i< degreeDistribution.length; i++) {
+
+			distribution[degreeDistribution[i]] = distribution[degreeDistribution[i]]++;
         }
+
+		Debug.Log("Starting nodeDegreeDistribution. DONE");
 
         return distribution;
     }
@@ -56,13 +64,15 @@ public class GraphCalculator<T> {
 	 * Side effect: Creates a file with the degree frequency of the graph given.
 	 */
 	public void createFrequencyFile() {
-		Map<Integer,Integer> map = degreeDistribution();
+		
+		int[] map = degreeDistribution();
 
 		try(FileWriter writer = new FileWriter("DegreeFrequency.txt")){
-			for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-                writer.append(entry.getKey().toString());
+			for (int i = 0; i < map.length; i++) {
+
+				writer.append(Integer.toString(i));
                 writer.append(",");
-                writer.append(entry.getValue().toString());
+                writer.append(Integer.toString(map[i]));
                 writer.append("\n");
 			}
 
